@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+      // const products = [
+      //   { id: 1, name: "P1", price: 34 },
+      //   { id: 2, name: "P2", price: 50 },
+      //   { id: 3, name: "P3", price: 40 },
+      // ];
+      let products = []
+
+fetch("products.json")
+  .then((response) => response.json()) 
+  .then((data) => (showProducts(data)))
+      
+      const cart = {};
+
+      const addToCart = (id) => {
+        if (!cart[id]) {
+          cart[id] = 1;
+        }
+        showCart();
+      };
+
+      const increment = (id) => {
+        cart[id] = cart[id] + 1;
+        showCart();
+        //items.innerHTML=100;
+      };
+
+      const decrement = (id) => {
+          cart[id] = cart[id] - 1;
+        showCart();
+        //items.innerHTML=50;
+      };
+
+      const deleteItem = (id) => {
+        delete cart[id];
+        showCart();
+      };
+
+      const showCart = () => {
+        let str = "";
+        let c=Object.keys(cart).length
+        items.innerHTML=c;
+        products.map((value) => {
+          if (cart[value.id]) {
+            c=c+cart[value.id];
+            str += `<div>
+              ${value.id}-${value.name}-${value.price} - 
+              <button onclick='decrement(${value.id})'>-</button>
+              ${cart[value.id]}
+              <button onclick='increment(${value.id})'>+</button>
+               ${value.price * cart[value.id]}
+              <button onclick='deleteItem(${value.id})'>Delete</button>
+            </div>`;
+          }
+        });
+        divCart.innerHTML = str;
+        //items.innerHTML=c;
+        tot();
+      };
+      const tot= () => {
+        //let t=0;
+        // products.forEach((value) =>
+        //  {
+        //     if(cart[value.id])
+        //     t=t+ cart[value.id]*value.price;
+        // });
+        let t=products.reduce((sum,val)=>
+      {
+        return sum+val.price*(cart[val.id]??0);
+      },0);
+        total.innerHTML = t;
+      };
+      const dispcart=()=>
+      {
+        cartbox.style.display="block";
+        prdbox.style.display="none";
+      }
+      const hideCart = () => {
+        cartbox.style.display = "none";
+        prdbox.style.display="block";
+      };
+
+      const showProducts = (data) => {
+        products=data;
+        let str = "<div class='row'>";
+        products.map((value) => {
+          str += `
+          <div class='box'>
+            <img src='${value.url}'>
+    <h3>${value.name}</h3>
+    <p>${value.desc}</p>
+    <h4>${value.price}</h4>
+    <button class="add-button" onclick='addToCart(${value.id})'>Add to Cart</button>
+    </div>
+    `;
+  });
+  divProducts.innerHTML = str;
+};
+    </script>
+  </head>
+  <body onload="showProducts()">
+    <div class="header">
+    <h1>My Store</h1>
+    <h4 onclick="dispcart()">Cart : <span id='items'></span></h4>
+    </div>
+    </body>
+    <hr />
+    <div id="prdbox">
+    <div id="divProducts"></div>
+    </div>
+    <div id="cartbox" style="display:none">
+        <h3>My Cart</h3>
+        <div id="divCart"></div>
+        <h3>Order Value:</h3>
+        <div id="total"></div>
+        <button onclick="hideCart()">Close</button>
+      </div>
+      <hr>
+      <h4>@copyrights reserved</h4>
+</body>     
+</html>
